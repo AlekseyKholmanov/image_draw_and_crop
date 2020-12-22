@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="open_pager_activity">Open pager activity</string>
+</resources>

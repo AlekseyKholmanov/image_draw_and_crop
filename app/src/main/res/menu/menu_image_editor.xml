@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/undo"
+        android:icon="@drawable/ic_undo"
+        android:title="undo"
+        app:iconTint="@android:color/white"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/text"
+        android:icon="@drawable/ic_text_fields"
+        android:title="text"
+        app:iconTint="@android:color/white"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/crop"
+        android:icon="@drawable/ic_crop"
+        android:title="crop"
+        app:iconTint="@android:color/white"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/brush"
+        android:icon="@drawable/ic_brush"
+        android:title="brush"
+        app:iconTint="@android:color/white"
+        app:showAsAction="always" />
+</menu>
