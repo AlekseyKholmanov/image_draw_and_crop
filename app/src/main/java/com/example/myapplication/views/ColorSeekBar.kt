@@ -118,7 +118,6 @@ class ColorSeekBar(context: Context, attributeSet: AttributeSet): View(context, 
     }
 
     private fun pickColor(position: Float, canvasWidth: Int): Int {
-        Log.d("M_M_ColorSeekBar", "income pos: $position width: $canvasWidth")
         val value = (position - paddingStart) / (canvasWidth - (paddingStart + paddingEnd))
         val color = when {
             value <= 0.0 -> colorSeeds[0]
@@ -136,7 +135,6 @@ class ColorSeekBar(context: Context, attributeSet: AttributeSet): View(context, 
                 Color.rgb( red, green, blue)
             }
         }
-        Log.d("M_M_ColorSeekBar", "pick color: $color")
         return color
     }
 

@@ -64,7 +64,7 @@ public class PhotoEditorView extends RelativeLayout {
         mImgSource.setId(imgSrcId);
         mImgSource.setAdjustViewBounds(true);
         RelativeLayout.LayoutParams imgSrcParam = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         imgSrcParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.PhotoEditorView);
@@ -80,9 +80,11 @@ public class PhotoEditorView extends RelativeLayout {
         mBrushDrawingView.setId(brushSrcId);
         //Align brush to the size of image view
         RelativeLayout.LayoutParams brushParam = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         brushParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         brushParam.addRule(RelativeLayout.ALIGN_TOP, imgSrcId);
+        brushParam.addRule(RelativeLayout.ALIGN_LEFT, imgSrcId);
+        brushParam.addRule(RelativeLayout.ALIGN_RIGHT, imgSrcId);
         brushParam.addRule(RelativeLayout.ALIGN_BOTTOM, imgSrcId);
 
         //Setup GLSurface attributes
@@ -92,9 +94,11 @@ public class PhotoEditorView extends RelativeLayout {
 
         //Align brush to the size of image view
         RelativeLayout.LayoutParams imgFilterParam = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         imgFilterParam.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         imgFilterParam.addRule(RelativeLayout.ALIGN_TOP, imgSrcId);
+        imgFilterParam.addRule(RelativeLayout.ALIGN_LEFT, imgSrcId);
+        imgFilterParam.addRule(RelativeLayout.ALIGN_RIGHT, imgSrcId);
         imgFilterParam.addRule(RelativeLayout.ALIGN_BOTTOM, imgSrcId);
 
         mImgSource.setOnImageChangedListener(new FilterImageView.OnImageChangedListener() {

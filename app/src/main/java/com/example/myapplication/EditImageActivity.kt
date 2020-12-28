@@ -47,7 +47,6 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
 
     private val brushPropertyListener = object : BrushPropertyListener {
         override fun onColorChanged(colorCode: Int, lastThumbPosition: Float) {
-            Log.d("M_M_", "$colorCode")
             color = colorCode
             this@EditImageActivity.lastColorPosition = lastThumbPosition
         }
@@ -173,8 +172,8 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
             val uri = result.uri
             val options = BitmapFactory.Options()
             val croppedRect = result.cropRect
-            Log.d("M_M_EditImageActivity", "saved: t:${saveRect?.top} l: ${saveRect?.left} b: ${saveRect?.bottom} r:${saveRect?.right}")
-            Log.d("M_M_EditImageActivity", "wholeImage: t:${result.wholeImageRect?.top} l: ${result.wholeImageRect?.left} b: ${result.wholeImageRect?.bottom} r:${result.wholeImageRect?.right}")
+            Log.d("E_M_EditImageActivity", "saved: t:${saveRect?.top} l: ${saveRect?.left} b: ${saveRect?.bottom} r:${saveRect?.right}")
+            Log.d("E_M_EditImageActivity", "wholeImage: t:${result.wholeImageRect?.top} l: ${result.wholeImageRect?.left} b: ${result.wholeImageRect?.bottom} r:${result.wholeImageRect?.right}")
             val newRect = Rect().apply {
                 left = result.wholeImageRect.bottom - croppedRect!!.bottom
                 top = croppedRect.left
@@ -186,8 +185,7 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
             val canvasXOffset = newRect.left.toFloat() / result.wholeImageRect.bottom
 
             val canvasYOffset = newRect.top.toFloat() / result.wholeImageRect.right
-            val newXCenter = (newRect.right - newRect.left)/2
-            val newYCenter = (newRect.bottom - newRect.top )/2
+            Log.d("E_M_EditImageActivity", "x: ${newRect.left} y: ${newRect.top} xScale: $xScale yScale: $yScale canvasXOffset: $canvasXOffset canvasYOffset: $canvasYOffset")
             photoEditor.setDrawableOffset(newRect.left, newRect.top, xScale, yScale, canvasXOffset, canvasYOffset)
             saveRect = newRect
             rotation = result.rotation

@@ -72,18 +72,18 @@ public class BrushDrawingView extends View {
     public BrushDrawingView(Context context) {
 
         this(context, null);
-        Log.d("M_BrushDrawingView", "BrushDrawingView: create view");
+        Log.d("M_BrushDrawingView", "0BrushDrawingView: create view canvas w: " + getWidth() + " h: " + getHeight());
     }
 
     public BrushDrawingView(Context context, AttributeSet attrs) {
 
         this(context, attrs, 0);
-        Log.d("M_BrushDrawingView", "BrushDrawingView: create view");
+        Log.d("M_BrushDrawingView", "1BrushDrawingView: create view canvas w: " + getWidth() + " h: " + getHeight());
     }
 
     public BrushDrawingView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        Log.d("M_BrushDrawingView", "BrushDrawingView: create view");
+        Log.d("M_BrushDrawingView", "2BrushDrawingView: create view canvas w: " + getWidth() + " h: " + getHeight());
         setupBrushDrawing();
     }
 
@@ -199,11 +199,12 @@ public class BrushDrawingView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         Bitmap canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mDrawCanvas = new Canvas(canvasBitmap);
+        Log.d("M_BrushDrawingView", "onSizeChanged: ");
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.d("M_BrushDrawingView", "onDraw: canvas w: " + getWidth() + " h: " + getHeight());
+        Log.d("M_Size", "onDraw: canvas w: " + getWidth() + " h: " + getHeight() + " rootHeight: " + getRootView().getHeight() + " rootWidth: " + getRootView().getWidth());
         Log.d("M_BrushDrawingView", "onDraw: canvas x offset %: " + canvasXOffset + " y in %: " + canvasYOffset);
         ViewGroup parent = (ViewGroup) getParent();
 //        Log.d("M_BrushDrawingView", "onDraw: parent W&H:[" + parent.getWidth() + ", " + parent.getHeight() + "]");
@@ -212,19 +213,27 @@ public class BrushDrawingView extends View {
 //        matrix.reset();
 //        matrix.setTranslate(-xOffset, -yOffset);
 //        matrix.setScale(xScale, yScale, getWidth()/2, getHeight()/2);
-        int i = 0;
-        Log.d("M_BrushDrawingView", "onDraw: ofssetX: " + xOffset + " yOffset: " + yOffset + " xScale: " + xScale + " yScale: " + yScale + "canvasXY [x,y]: " + getWidth() + ", " + getHeight());
+
+
         for (LinePath linePath : mDrawnPaths) {
             Path path = linePath.getDrawPath();
-            float canvasXPixelOffset = (xOffset != 0f) ? -1 * (getWidth() * canvasXOffset * xScale) : 0f;
-            float canvasYPixelOffset = (yOffset != 0f) ? -1 * (getHeight() * canvasYOffset * yScale) : 0f;
-            Log.d("M_BrushDrawingView", "onDraw: canvas calculated offset XY :[" + canvasXPixelOffset + ", " + canvasYPixelOffset + "]");
-//
-//
             if ((xScale > 1f || yScale > 1f) && linePath.getxScale() == 1f && linePath.getyScale() == 1f) {
+                float moreX = (float) getWidth() /linePath.getcanvasWidth() ;
+                float moreY = (float) getHeight() /linePath.getcanvasHeight() ;
+                float realScaleX = xScale * moreX;
+                float realScaleY = yScale * moreY;
+                Log.d("M_BrushDrawingView", "moreX: " + moreX + "moreY: " + moreY + "realScale :[" + realScaleX +", " + realScaleY + "]");
+                float canvasXPixelOffset = (xOffset != 0f)
+                        ? (getWidth() < linePath.getcanvasWidth())
+                        ? -1 * (getWidth() * canvasXOffset * moreX )
+                        : -1 * (getWidth() * canvasXOffset)
+                        : 0f;
+                float canvasYPixelOffset = (yOffset != 0f) ? -1 * (getHeight() * canvasYOffset* moreY) : 0f;
+                Log.d("M_BrushDrawingView", "onDraw: ofssetX: " + xOffset + " yOffset: " + yOffset + "|||| xScale: " + xScale + " yScale: " + yScale + "canvasXYOffset [x,y]: " + canvasXOffset + ", " + canvasYOffset + "||| offset in pixels :[" + canvasXPixelOffset + ", " + canvasYPixelOffset + "]");
+
                 matrix.reset();
-                matrix.preScale(xScale, yScale);
-                matrix.postTranslate(canvasXPixelOffset, canvasYPixelOffset);
+                matrix.preTranslate(canvasXPixelOffset, canvasYPixelOffset);
+                matrix.postScale(realScaleX, realScaleY);
 //                matrix.postScale(xScale, yScale);
 //                matrix.setScale(xScale, yScale);
                 path.transform(matrix);
@@ -317,20 +326,13 @@ public class BrushDrawingView extends View {
         }
     }
 
-    private void readPath(Path path, int index) {
-        PathMeasure pm = new PathMeasure(path, false);
-        //coordinates will be here
-        float aCoordinates[] = {0f, 0f};
-        pm.getPosTan(pm.getLength() * 0.5f, aCoordinates, null);
-        Log.d("M_BrushDrawingView", "readPath for index:" + index + "| x: " + aCoordinates[0] + " y: " + aCoordinates[1]);
-    }
-
     private void touchUp() {
         mPath.lineTo(mTouchX, mTouchY);
         // Commit the path to our offscreen
         mDrawCanvas.drawPath(mPath, mDrawPaint);
         // kill this so we don't double draw
-        mDrawnPaths.push(new LinePath(mPath, mDrawPaint, xOffset, yOffset, xScale, yScale));
+
+        mDrawnPaths.push(new LinePath(mPath, mDrawPaint, xOffset, yOffset, xScale, yScale, getWidth(), getHeight()));
         mPath = new Path();
         if (mBrushViewChangeListener != null) {
             mBrushViewChangeListener.onStopDrawing();
