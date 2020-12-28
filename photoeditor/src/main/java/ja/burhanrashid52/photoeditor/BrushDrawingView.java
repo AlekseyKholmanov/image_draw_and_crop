@@ -225,7 +225,7 @@ public class BrushDrawingView extends View {
                 Log.d("M_BrushDrawingView", "moreX: " + moreX + "moreY: " + moreY + "realScale :[" + realScaleX +", " + realScaleY + "]");
                 float canvasXPixelOffset = (xOffset != 0f)
                         ? (getWidth() < linePath.getcanvasWidth())
-                        ? -1 * (getWidth() * canvasXOffset * moreX )
+                        ? -1 * (getWidth() * canvasXOffset * moreX + ((linePath.getcanvasWidth() - getWidth())/ 2f))
                         : -1 * (getWidth() * canvasXOffset)
                         : 0f;
                 float canvasYPixelOffset = (yOffset != 0f) ? -1 * (getHeight() * canvasYOffset* moreY) : 0f;
