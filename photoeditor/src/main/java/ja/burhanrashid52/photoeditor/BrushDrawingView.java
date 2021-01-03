@@ -217,26 +217,28 @@ public class BrushDrawingView extends View {
 
         for (LinePath linePath : mDrawnPaths) {
             Path path = linePath.getDrawPath();
-            if ((xScale > 1f || yScale > 1f) && linePath.getxScale() == 1f && linePath.getyScale() == 1f) {
-                float moreX = (float) getWidth() /linePath.getcanvasWidth() ;
-                float moreY = (float) getHeight() /linePath.getcanvasHeight() ;
-                float realScaleX = xScale * moreX;
-                float realScaleY = yScale * moreY;
-                Log.d("M_BrushDrawingView", "moreX: " + moreX + "moreY: " + moreY + "realScale :[" + realScaleX +", " + realScaleY + "]");
-                float canvasXPixelOffset = (xOffset != 0f)
-                        ? (getWidth() < linePath.getcanvasWidth())
-                        ? -1 * (getWidth() * canvasXOffset * moreX + ((linePath.getcanvasWidth() - getWidth())/ 2f))
-                        : -1 * (getWidth() * canvasXOffset)
-                        : 0f;
-                float canvasYPixelOffset = (yOffset != 0f) ? -1 * (getHeight() * canvasYOffset* moreY) : 0f;
-                Log.d("M_BrushDrawingView", "onDraw: ofssetX: " + xOffset + " yOffset: " + yOffset + "|||| xScale: " + xScale + " yScale: " + yScale + "canvasXYOffset [x,y]: " + canvasXOffset + ", " + canvasYOffset + "||| offset in pixels :[" + canvasXPixelOffset + ", " + canvasYPixelOffset + "]");
+            if (xScale > 1f || yScale > 1f) {
+                if (linePath.getxScale() == 1f && linePath.getyScale() == 1f) {
+                    float moreX = (float) getWidth() / linePath.getcanvasWidth();
+                    float moreY = (float) getHeight() / linePath.getcanvasHeight();
+                    float realScaleX = xScale * moreX;
+                    float realScaleY = yScale * moreY;
+                    Log.d("M_BrushDrawingView", "moreX: " + moreX + "moreY: " + moreY + "realScale :[" + realScaleX + ", " + realScaleY + "]");
+                    float canvasXPixelOffset = (xOffset != 0f)
+                            ? (getWidth() < linePath.getcanvasWidth())
+                            ? -1 * (getWidth() * canvasXOffset * moreX + ((linePath.getcanvasWidth() - getWidth()) / 2f))
+                            : -1 * (getWidth() * canvasXOffset)
+                            : 0f;
+                    float canvasYPixelOffset = (yOffset != 0f) ? -1 * (getHeight() * canvasYOffset * moreY) : 0f;
+                    Log.d("M_BrushDrawingView", "onDraw: ofssetX: " + xOffset + " yOffset: " + yOffset + "|||| xScale: " + xScale + " yScale: " + yScale + "canvasXYOffset [x,y]: " + canvasXOffset + ", " + canvasYOffset + "||| offset in pixels :[" + canvasXPixelOffset + ", " + canvasYPixelOffset + "]");
 
-                matrix.reset();
-                matrix.preTranslate(canvasXPixelOffset, canvasYPixelOffset);
-                matrix.postScale(realScaleX, realScaleY);
+                    matrix.reset();
+                    matrix.preTranslate(canvasXPixelOffset, canvasYPixelOffset);
+                    matrix.postScale(realScaleX, realScaleY);
 //                matrix.postScale(xScale, yScale);
 //                matrix.setScale(xScale, yScale);
-                path.transform(matrix);
+                    path.transform(matrix);
+                }
             }
             canvas.drawPath(path, linePath.getDrawPaint());
         }
