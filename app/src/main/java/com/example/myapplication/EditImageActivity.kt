@@ -41,7 +41,7 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
             field = value
             photoEditor.brushColor = value
         }
-    var lastColorPosition:Float = 0f
+    var lastColorPosition: Float = 0f
     var saveRect: Rect? = null
     var rotation: Int? = null
 
@@ -61,7 +61,7 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
 
     }
 
-    val photoEditorListener = object: OnPhotoEditorListener{
+    val photoEditorListener = object : OnPhotoEditorListener {
 
         override fun onEditTextChangeListener(rootView: View, text: String, colorCode: Int) {
             val fragment = TextEditorDialog.showInstance(this@EditImageActivity, text, colorCode)
@@ -93,7 +93,7 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
         super.onCreate(savedInstanceState)
 //        val imageRes = intent.extras?.getInt(ImageFragment.IMAGE_RES_KEY) ?: return
         val uri = intent.extras?.getString(URI)
-        Log.d("M_M_","incomeUri: ${uri.toString()}")
+        Log.d("M_M_", "incomeUri: ${uri.toString()}")
         image.source.load(uri)
 
         val options = BitmapFactory.Options()
@@ -151,6 +151,7 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
             R.id.crop -> {
                 val act = CropImage.activity(Uri.parse(intent.extras?.getString(URI).toString()))
                     .setGuidelines(CropImageView.Guidelines.ON)
+                    .setAutoZoomEnabled(false)
                 saveRect?.let {
                     act.setInitialCropWindowRectangle(it)
                 }
@@ -171,24 +172,48 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
             val result = CropImage.getActivityResult(data)
             val uri = result.uri
             val options = BitmapFactory.Options()
-            val croppedRect = result.cropRect
-            Log.d("E_M_EditImageActivity", "saved: t:${saveRect?.top} l: ${saveRect?.left} b: ${saveRect?.bottom} r:${saveRect?.right}")
-            Log.d("E_M_EditImageActivity", "wholeImage: t:${result.wholeImageRect?.top} l: ${result.wholeImageRect?.left} b: ${result.wholeImageRect?.bottom} r:${result.wholeImageRect?.right}")
-            val newRect = Rect().apply {
-                left = result.wholeImageRect.bottom - croppedRect!!.bottom
-                top = croppedRect.left
-                right = result.wholeImageRect.bottom - croppedRect.top
-                bottom = croppedRect.right
-            }
-            val yScale = result.wholeImageRect.right.toFloat() / (newRect.bottom - newRect.top)
-            val xScale = result.wholeImageRect.bottom.toFloat() / (newRect.right - newRect.left)
-            val canvasXOffset = newRect.left.toFloat() / result.wholeImageRect.bottom
-
-            val canvasYOffset = newRect.top.toFloat() / result.wholeImageRect.right
-            Log.d("E_M_EditImageActivity", "x: ${newRect.left} y: ${newRect.top} xScale: $xScale yScale: $yScale canvasXOffset: $canvasXOffset canvasYOffset: $canvasYOffset")
-            photoEditor.setDrawableOffset(newRect.left, newRect.top, xScale, yScale, canvasXOffset, canvasYOffset)
-            saveRect = newRect
             rotation = result.rotation
+            val croppedRect = result.cropRect
+            Log.d(
+                "E_M_EditImageActivity",
+                "saved: t:${saveRect?.top} l: ${saveRect?.left} b: ${saveRect?.bottom} r:${saveRect?.right}"
+            )
+            Log.d(
+                "E_M_EditImageActivity",
+                "wholeImage: t:${result.wholeImageRect?.top} l: ${result.wholeImageRect?.left} b: ${result.wholeImageRect?.bottom} r:${result.wholeImageRect?.right}"
+            )
+            val leftX =
+                if (rotation == 0) result.cropPoints[0] else result.wholeImageRect.bottom - result.cropPoints[1]
+            val leftY =
+                if (rotation == 0) result.cropPoints[1] else result.cropPoints[0]
+
+            val rightX =
+                if(rotation == 0) result.cropPoints[4] else result.wholeImageRect.bottom - result.cropPoints[3]
+            val rightY = if(rotation ==0) result.cropPoints[5] else result.cropPoints[4]
+
+            val height = if(rotation == 90) result.wholeImageRect.right else result.wholeImageRect.bottom
+            val width = if(rotation == 90) result.wholeImageRect.bottom else result.wholeImageRect.right
+
+            val newRect = Rect().apply {
+                left = leftX.toInt()
+                top = leftY.toInt()
+                right = rightX.toInt()
+                bottom = rightY.toInt()
+            }
+            val yPixelScale = height.toFloat() / (newRect.bottom - newRect.top)
+            val xPixelScale = width.toFloat() / (newRect.right - newRect.left)
+
+            val topXRatioPositionInOriginal = newRect.left.toFloat() / width
+            val topYRatioPositionInOriginal = newRect.top.toFloat() / height
+            photoEditor.setDrawableOffset(
+                newRect.left,
+                newRect.top,
+                xPixelScale,
+                yPixelScale,
+                topXRatioPositionInOriginal,
+                topYRatioPositionInOriginal
+            )
+            saveRect = newRect
 
             options.inJustDecodeBounds = true
             BitmapFactory.decodeFile(File(uri.path).absolutePath, options)
