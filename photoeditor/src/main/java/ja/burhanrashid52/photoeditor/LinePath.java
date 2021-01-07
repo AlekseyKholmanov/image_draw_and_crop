@@ -6,10 +6,10 @@ import android.graphics.Path;
 class LinePath {
     private final Paint mDrawPaint;
     private final Path mDrawPath;
-    private final float xOffset;
-    private final float yOffset;
-    private final float xScale;
-    private final float yScale;
+    private final float xPixelScale;
+    private final float yPixelScale;
+    private final float topXRatioPositionInOriginal;
+    private final float topYRatioPositionInOriginal;
 
     private final int canvasWidth;
     private final int canvasHeight;
@@ -17,21 +17,21 @@ class LinePath {
     LinePath(final Path drawPath, final Paint drawPaints){
         mDrawPaint = new Paint(drawPaints);
         mDrawPath = new Path(drawPath);
-        this.xOffset = 0f;
-        this.yOffset = 0f;
-        this.xScale = 1f;
-        this.yScale = 1f;
+        this.xPixelScale = 1f;
+        this.yPixelScale = 1f;
+        this.topXRatioPositionInOriginal = 0f;
+        this.topYRatioPositionInOriginal = 0f;
         this.canvasWidth = 1;
         this.canvasHeight = 1;
     }
 
-    LinePath(final Path drawPath, final Paint drawPaints, final float xOffset, final float yOffset, final float xScale, final float yScale, final int canvasWidth, final int canvasHeight) {
+    LinePath(final Path drawPath, final Paint drawPaints, final float xPixelScale, final float yPixelScale, final float topXRatioPositionInOriginal, final float topYRatioPositionInOriginal, final int canvasWidth, final int canvasHeight) {
         mDrawPaint = new Paint(drawPaints);
         mDrawPath = new Path(drawPath);
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
-        this.xScale = xScale;
-        this.yScale = yScale;
+        this.xPixelScale = xPixelScale;
+        this.yPixelScale = yPixelScale;
+        this.topXRatioPositionInOriginal = topXRatioPositionInOriginal;
+        this.topYRatioPositionInOriginal = topYRatioPositionInOriginal;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
     }
@@ -44,20 +44,20 @@ class LinePath {
         return new Path(mDrawPath);
     }
 
-    public float getxOffset() {
-        return xOffset;
+    public float getxPixelScale() {
+        return xPixelScale;
     }
 
-    public float getyOffset() {
-        return yOffset;
+    public float getyPixelScale() {
+        return yPixelScale;
     }
 
-    public float getxScale() {
-        return xScale;
+    public float getTopXRatioPositionInOriginal() {
+        return topXRatioPositionInOriginal;
     }
 
-    public float getyScale() {
-        return yScale;
+    public float gettopYRatioPositionInOriginal() {
+        return topYRatioPositionInOriginal;
     }
 
     public int getcanvasWidth() {

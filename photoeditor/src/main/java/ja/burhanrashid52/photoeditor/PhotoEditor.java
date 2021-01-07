@@ -839,8 +839,8 @@ public class PhotoEditor implements BrushViewChangeListener {
         }
     }
 
-    public void setDrawableOffset(int x, int y, float xPixelScale, float yPixelScale, float topXRatioPositionInOriginal, float topYRatioPositionInOriginal){
-        brushDrawingView.setDrawableOffset(x, y, xPixelScale, yPixelScale, topXRatioPositionInOriginal, topYRatioPositionInOriginal);
+    public void setDrawableOffset(float xPixelScale, float yPixelScale, float topXRatioPositionInOriginal, float topYRatioPositionInOriginal){
+        brushDrawingView.setDrawableOffset(xPixelScale, yPixelScale, topXRatioPositionInOriginal, topYRatioPositionInOriginal);
     }
 
 

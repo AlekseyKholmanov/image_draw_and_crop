@@ -191,8 +191,8 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
                 if(rotation == 0) result.cropPoints[4] else result.wholeImageRect.bottom - result.cropPoints[3]
             val rightY = if(rotation ==0) result.cropPoints[5] else result.cropPoints[4]
 
-            val height = if(rotation == 90) result.wholeImageRect.right else result.wholeImageRect.bottom
-            val width = if(rotation == 90) result.wholeImageRect.bottom else result.wholeImageRect.right
+            val height = if(rotation == 0) result.wholeImageRect.bottom else result.wholeImageRect.right
+            val width = if(rotation == 0) result.wholeImageRect.right else result.wholeImageRect.bottom
 
             val newRect = Rect().apply {
                 left = leftX.toInt()
@@ -206,15 +206,12 @@ class EditImageActivity : AppCompatActivity(R.layout.activity_edit_image) {
             val topXRatioPositionInOriginal = newRect.left.toFloat() / width
             val topYRatioPositionInOriginal = newRect.top.toFloat() / height
             photoEditor.setDrawableOffset(
-                newRect.left,
-                newRect.top,
                 xPixelScale,
                 yPixelScale,
                 topXRatioPositionInOriginal,
                 topYRatioPositionInOriginal
             )
             saveRect = newRect
-
             options.inJustDecodeBounds = true
             BitmapFactory.decodeFile(File(uri.path).absolutePath, options)
             image.source.setImageURI(uri)
