@@ -58,9 +58,10 @@ public class BrushDrawingView extends View {
 
     private float xPixelScale = 1f;
     private float yPixelScale = 1f;
-    private float topXRatioPositionInOriginal = 1f;
-    private float topYRatioPositionInOriginal = 1f;
+    private float currentXRatioOffset = 1f;
+    private float currentYRatioOffset = 1f;
     private final Matrix matrix = new Matrix();
+
 
     private BrushViewChangeListener mBrushViewChangeListener;
 
@@ -111,8 +112,8 @@ public class BrushDrawingView extends View {
 
         this.xPixelScale = xPixelScale;
         this.yPixelScale = yPixelScale;
-        this.topXRatioPositionInOriginal = topXRatioPositionInOriginal;
-        this.topYRatioPositionInOriginal = topYRatioPositionInOriginal;
+        this.currentXRatioOffset = topXRatioPositionInOriginal;
+        this.currentYRatioOffset = topYRatioPositionInOriginal;
         invalidate();
     }
 
@@ -193,7 +194,7 @@ public class BrushDrawingView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         Bitmap canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mDrawCanvas = new Canvas(canvasBitmap);
-        Log.d("M_BrushDrawingView", "onSizeChanged: ");
+        Log.d("M_BrushDrawingView", "onSizeChanged: oldWH: " + oldw + ", " + oldh + "new: " + w + ", " + h);
     }
 
     @Override
@@ -221,11 +222,11 @@ public class BrushDrawingView extends View {
                     float moreY = (float) getHeight() / linePath.getcanvasHeight();
                     float canvasXRatio = moreX * xPixelScale;
                     float canvasYratio = moreY * yPixelScale;
-                    float currentXOffset = linePath.getcanvasWidth() * topXRatioPositionInOriginal * -1;
-                    float currentYOffset = linePath.getcanvasHeight() * topYRatioPositionInOriginal * -1;
+                    float currentXOffset = linePath.getcanvasWidth() * currentXRatioOffset * -1;
+                    float currentYOffset = linePath.getcanvasHeight() * currentYRatioOffset * -1;
 
                     Log.d("M_BrushDrawingView", "            w,h:[" + getWidth() + ", " + getHeight() + "] drawW,H: [" + linePath.getcanvasWidth() + ", " + linePath.getcanvasHeight());
-                    Log.d("M_BrushDrawingView", "   topXYRatPos: [" + topXRatioPositionInOriginal + ", " + topYRatioPositionInOriginal + "]");
+                    Log.d("M_BrushDrawingView", "   topXYRatPos: [" + currentXRatioOffset + ", " + currentYRatioOffset + "]");
                     Log.d("M_BrushDrawingView", "        moreXY: [" + moreX + ", " + moreY + "]");
                     Log.d("M_BrushDrawingView", "XY_Pixel_Scale: [" + xPixelScale + ", " + yPixelScale + "]");
                     Log.d("M_BrushDrawingView", " canvasRatioXY: [" + canvasXRatio + ", " + canvasYratio + "]");
@@ -235,21 +236,53 @@ public class BrushDrawingView extends View {
                     matrix.preTranslate(currentXOffset, currentYOffset);
                     matrix.postScale(canvasXRatio, canvasYratio);
                     path.transform(matrix);
+                    double currentSize = currentStrokeWidth * Math.sqrt(xPixelScale * yPixelScale);
+                    newPaint.setStrokeWidth((float) currentSize);
                 } else {
+                    float scaleX = xPixelScale / linePath.getxPixelScale();
+                    float scaleY = yPixelScale / linePath.getyPixelScale();
                     float moreX = (float) getWidth() / linePath.getcanvasWidth();
                     float moreY = (float) getHeight() / linePath.getcanvasHeight();
-                    float canvasXRatio = moreX * xPixelScale/linePath.getxPixelScale();
-                    float canvasYratio = moreY * yPixelScale/ linePath.getyPixelScale();
-                    float currentXOffset = linePath.getcanvasWidth() * Math.abs(topXRatioPositionInOriginal - linePath.getTopXRatioPositionInOriginal()) * -1;
-                    float currentYOffset = linePath.getcanvasHeight() * Math.abs(topYRatioPositionInOriginal - linePath.gettopYRatioPositionInOriginal()) * -1;
-                    Log.d("M_BrushDrawingView", "onDraw: ");
+                    float canvasXRatio = moreX * xPixelScale / linePath.getxPixelScale();
+                    float canvasYratio = moreY * yPixelScale / linePath.getyPixelScale();
+                    float currentXOffset = getWidth() * (currentXRatioOffset - linePath.getTopXRatioPositionInOriginal())* xPixelScale;
+                    float currentYOffset = getHeight() * (currentYRatioOffset - linePath.gettopYRatioPositionInOriginal())  * yPixelScale;
+//
+//                    float positionInOriginalCanvas = linePath.getcanvasWidth() * linePath.getxPixelScale() * linePath.getTopXRatioPositionInOriginal();
+
+//
+//                    float moreX = (float) getWidth() / linePath.getcanvasWidth();
+//                    float moreY = (float) getHeight() / linePath.getcanvasHeight();
+//                    float canvasXRatio = moreX * linePath.getxPixelScale() / xPixelScale;
+//                    float canvasYratio = moreY * linePath.getyPixelScale() / yPixelScale;
+//                    float currentXOffset =  getWidth() * currentXRatioOffset * -1;
+//                    float currentYOffset = getHeight() * currentYRatioOffset * -1;
+                    //float offsetX = Math.abs(getWidth() * xPixelScale * currentXRatioOffset - linePath.getxPixelScale() * linePath.getTopXRatioPositionInOriginal() * linePath.getcanvasWidth());
+
+//                    float offsetX = (getWidth()*currentXRatioOffset - linePath.getcanvasWidth()*linePath.getTopXRatioPositionInOriginal())*xPixelScale;
+//                    float offsetX =  (currentXRatioOffset - linePath.getTopXRatioPositionInOriginal()) * xPixelScale * getWidth();
+//                    float moreX = (float) getWidth() / linePath.getcanvasWidth();
+//                    float moreY = (float) getHeight() / linePath.getcanvasHeight();
+//                    float canvasXRatio = moreX * linePath.getxPixelScale()/xPixelScale ;
+//                    float canvasYratio = moreY * linePath.getyPixelScale() / yPixelScale;
+                    int direction = linePath.getTopXRatioPositionInOriginal()>currentXRatioOffset ? 1 : -1;
+
+
+                    Log.d("M_BrushDrawingView_С", "**********************************");
+                    Log.d("M_BrushDrawingView_С", "linePath_____Scale: [" + linePath.getxPixelScale() + ", " + linePath.getyPixelScale() + "]");
+                    Log.d("M_BrushDrawingView_С", "LinePath_____topXY: [" + linePath.getTopXRatioPositionInOriginal() + ", " + linePath.gettopYRatioPositionInOriginal() + "]");
+                    Log.d("M_BrushDrawingView_С", "LinePath___drawW,H: [" + linePath.getcanvasWidth() + ", " + linePath.getcanvasHeight());
+                    Log.d("M_BrushDrawingView_С", "       current_w,h: [" + getWidth() + ", " + getHeight() + "]");
+                    Log.d("M_BrushDrawingView_С", "     current_topXY: [" + currentXRatioOffset + ", " + currentYRatioOffset + "]");
+                    Log.d("M_BrushDrawingView_С", "    XY_Pixel_Scale: [" + xPixelScale + ", " + yPixelScale + "]");
+                    Log.d("M_BrushDrawingView_С", "     canvasRatioXY: [" + canvasXRatio + ", " + canvasYratio + "]");
+                    Log.d("M_BrushDrawingView_С", "             moreX: [" + moreX + ", " + moreY + "]");
+                    Log.d("M_BrushDrawingView_С", "*********************************");
+//                    matrix.preTranslate(direction * Math.abs(offsetX) , 0);;
+                    matrix.preTranslate(Math.abs(currentXOffset)* direction , currentYOffset);
                     matrix.postScale(canvasXRatio, canvasYratio);
-                    matrix.preTranslate(currentXOffset, currentYOffset);
                     path.transform(matrix);
                 }
-                double currentSize = currentStrokeWidth * Math.sqrt(xPixelScale * yPixelScale);
-                newPaint.setStrokeWidth((float) currentSize);
-                Log.d("M_BrushDrawingView_SIZE", "onDraw: parentSize: " + linePath.getDrawPaint().getStrokeWidth() + ", currentSIze: " + currentSize);
                 canvas.drawPath(path, newPaint);
             } else {
                 canvas.drawPath(path, linePath.getDrawPaint());
@@ -257,6 +290,8 @@ public class BrushDrawingView extends View {
 
         }
         Log.d("M_BrushDrawingView", "||||||||||||||||||||||||||||||||||||||");
+        Log.d("M_BrushDrawingView_P", "parentH:" + ((ViewGroup) getParent()).getHeight() + ", parentW: " + ((ViewGroup) getParent()).getWidth());
+        Log.d("M_BrushDrawingView_P", "||||||||||||||||||||||||||||||||||||||");
         canvas.drawPath(mPath, mDrawPaint);
     }
 
@@ -349,7 +384,7 @@ public class BrushDrawingView extends View {
         mDrawCanvas.drawPath(mPath, mDrawPaint);
         // kill this so we don't double draw
 
-        mDrawnPaths.push(new LinePath(mPath, mDrawPaint, xPixelScale, yPixelScale, topXRatioPositionInOriginal, topYRatioPositionInOriginal, getWidth(), getHeight()));
+        mDrawnPaths.push(new LinePath(mPath, mDrawPaint, xPixelScale, yPixelScale, currentXRatioOffset, currentYRatioOffset, getWidth(), getHeight()));
         mPath = new Path();
         if (mBrushViewChangeListener != null) {
             mBrushViewChangeListener.onStopDrawing();
@@ -365,5 +400,10 @@ public class BrushDrawingView extends View {
     @VisibleForTesting
     Pair<Stack<LinePath>, Stack<LinePath>> getDrawingPath() {
         return new Pair<>(mDrawnPaths, mRedoPaths);
+    }
+
+    public void log() {
+
+        Log.d("M_BrushDrawingView_INITIAL", " w: " + getWidth() + " h: " + getHeight());
     }
 }

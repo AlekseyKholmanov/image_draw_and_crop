@@ -119,6 +119,7 @@ public class PhotoEditorView extends RelativeLayout {
 
         //Add brush view
         addView(mBrushDrawingView, brushParam);
+        mBrushDrawingView.log();
 
     }
 
